@@ -1,27 +1,31 @@
 import azure.functions as func
-import logging
+import os
+import uuid
+from datetime import datetime, timezone
+import json
+from azure.cosmos import CosmosClient
 
-app = func.FunctionApp(http_auth_level=func.AuthLevel.FUNCTION)
+app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.function_name(name="HttpExample")
-@app.route(route="http_example")
+COSMOS_CONN = os.environ["CosmosDBConnection"]   
+DB_NAME = "VisitCount"                     
+CONTAINER_NAME = "Visitors"                   
 
-def HttpExample(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+client = CosmosClient.from_connection_string(COSMOS_CONN)
+database = client.get_database_client(DB_NAME)
+container = database.get_container_client(CONTAINER_NAME)
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+@app.route(route="track", methods=["POST"])
+def track_visit(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        visit = {
+            "id": str(uuid.uuid4()),
+            "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "ip": req.headers.get(req.remote_addr)
+        }
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+        container.create_item(body=visit)
+
+        return func.HttpResponse("Site visit recorded", status_code=200)
+    except Exception as e:
+        return func.HttpResponse(f"Error: {str(e)}", status_code=500)
