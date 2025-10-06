@@ -20,7 +20,7 @@ def track_visit(req: func.HttpRequest) -> func.HttpResponse:
     try:
         visit = {
             "id": str(uuid.uuid4()),
-            "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         }
 
         container.create_item(body=visit)
