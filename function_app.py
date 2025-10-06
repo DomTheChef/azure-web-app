@@ -24,6 +24,7 @@ def track_visit(req: func.HttpRequest) -> func.HttpResponse:
             "ip": req.headers.get(req.remote_addr)
         }
 
+
         container.create_item(body=visit)
 
         return func.HttpResponse("Site visit recorded", status_code=200)
