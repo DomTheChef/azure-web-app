@@ -20,7 +20,8 @@ def track_visit(req: func.HttpRequest) -> func.HttpResponse:
     try:
         visit = {
             "id": str(uuid.uuid4()),
-            "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+            "timestamp": datetime.now(timezone.utc).replace(microsecond=0).isoformat(),
+            "ip": req.headers.get("x-forwarded-for", req.remote_addr)
         }
 
         container.create_item(body=visit)
