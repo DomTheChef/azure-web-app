@@ -15,7 +15,7 @@ database = client.get_database_client(DB_NAME)
 container = database.get_container_client(CONTAINER_NAME)
 
 @app.function_name(name="track_visit")
-@app.route(route="track", methods=["POST"])
+@app.route(route="track")
 def track_visit(req: func.HttpRequest) -> func.HttpResponse:
     try:
         visit = {
