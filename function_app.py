@@ -8,6 +8,9 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 @app.route(route="track", methods=["GET", "POST"])
 def track(req: func.HttpRequest) -> func.HttpResponse:
     try:
+        
+        logging.info(f"CosmosDBConnection starts with: {os.environ.get('CosmosDBConnection', '')[:30]}")
+
         conn = os.environ["CosmosDBConnection"]
         if not conn:
             return func.HttpResponse("Missing CosmosDBConnection setting", status_code=500)
@@ -21,6 +24,5 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
 
         return func.HttpResponse("Ok", status_code=200)
     except Exception as e:
-
         logging.error(f"CosmosDB error: {e}")
         return func.HttpResponse("CosmosDB error occurred", status_code=500)
