@@ -1,3 +1,7 @@
+#yaml autodeploy file
+dev_dom-test-fnapp.yml
+dev_dom-prod-fnapp.yml
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
