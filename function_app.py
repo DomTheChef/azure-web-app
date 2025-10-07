@@ -21,3 +21,5 @@ def track(req: func.HttpRequest, doc: func.Out[str]) -> func.HttpResponse:
     doc.set(json.dumps(item))
 
     return func.HttpResponse("Inserted into Cosmos!", status_code=200)
+
+
