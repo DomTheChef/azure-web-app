@@ -15,3 +15,4 @@ container = database.get_container_client(CONTAINER_NAME)
 @app.route(route="track", methods=["GET", "POST"])
 def track(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse("OK", status_code=200)
+
