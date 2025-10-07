@@ -21,3 +21,4 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse("Ok", status_code=200)
     except Exception as e:
         return func.HttpResponse(f"CosmosDB error: {e}", status_code=500)
+
