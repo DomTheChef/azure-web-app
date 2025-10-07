@@ -1,7 +1,7 @@
 import azure.functions as func
 import uuid
 import json
-import logging
+import os  
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
@@ -13,13 +13,21 @@ app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 )
 @app.route(route="track", methods=["GET"])
 def track(req: func.HttpRequest, doc: func.Out[str]) -> func.HttpResponse:
-    try:
-        item = {
-            "id": str(uuid.uuid4()),
-            "note": "Prod test entry"
-        }
-        doc.set(json.dumps(item))
-        return func.HttpResponse("Inserted into Cosmos!", status_code=200)
-    except Exception as e:
-        logging.error(f"Cosmos DB binding failed: {e}")
-        return func.HttpResponse(f"Cosmos DB binding failed: {e}", status_code=500)
+    item = {
+        "id": str(uuid.uuid4()),
+        "note": "Test entry"
+    }
+    doc.set(json.dumps(item))
+    return func.HttpResponse("Inserted into Cosmos!", status_code=200)
+
+
+@app.route(route="debug-conn", methods=["GET"])
+def debug_conn(req: func.HttpRequest) -> func.HttpResponse:
+    conn_val = os.getenv("CosmosConn")
+    if conn_val:
+        return func.HttpResponse(
+            f"CosmosConn is set. Starts with: {conn_val[:40]}...",
+            status_code=200
+        )
+    else:
+        return func.HttpResponse("CosmosConn is NOT set!", status_code=500)
