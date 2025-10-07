@@ -1,13 +1,14 @@
 import azure.functions as func
 from azure.cosmos import CosmosClient
 import os, uuid
+import logging  
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
 @app.route(route="track", methods=["GET", "POST"])
 def track(req: func.HttpRequest) -> func.HttpResponse:
     try:
-        conn = os.environ.get("CosmosDBConnection")
+        conn = os.environ["CosmosDBConnection"]
         if not conn:
             return func.HttpResponse("Missing CosmosDBConnection setting", status_code=500)
 
@@ -20,5 +21,6 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
 
         return func.HttpResponse("Ok", status_code=200)
     except Exception as e:
-        return func.HttpResponse(f"CosmosDB error: {e}", status_code=500)
 
+        logging.error(f"CosmosDB error: {e}")
+        return func.HttpResponse("CosmosDB error occurred", status_code=500)
