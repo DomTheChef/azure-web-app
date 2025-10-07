@@ -1,17 +1,23 @@
 import azure.functions as func
-from azure.cosmos import CosmosClient
-import os
+import uuid
+import json
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-COSMOS_CONN = os.environ["CosmosDBConnection"]   
-DB_NAME = "VisitCount"                     
-CONTAINER_NAME = "Visitors"                   
+@app.cosmos_db_output(
+    arg_name="doc",
+    database_name="VisitCount",       
+    container_name="Visitors",     
+    connection="CosmosConn"          
+)
+@app.route(route="track", methods=["GET"])
+def track(req: func.HttpRequest, doc: func.Out[str]) -> func.HttpResponse:
 
-client = CosmosClient.from_connection_string(COSMOS_CONN)
-database = client.get_database_client(DB_NAME)
-container = database.get_container_client(CONTAINER_NAME)
+    item = {
+        "id": str(uuid.uuid4()),     
+        "note": "Test entry"
+    }
 
-@app.route(route="track", methods=["GET", "POST"])
-def track(req: func.HttpRequest) -> func.HttpResponse:
-    return func.HttpResponse("OK", status_code=200)
+    doc.set(json.dumps(item))
+
+    return func.HttpResponse("Inserted into Cosmos!", status_code=200)
