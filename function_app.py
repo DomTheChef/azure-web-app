@@ -24,7 +24,7 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
     try:
         item = {
             "id": str(uuid.uuid4()),
-            "note": "Prod test entry",
+            "note": "Dev test entry",
         }
 
         cosmos_container.create_item(item)
