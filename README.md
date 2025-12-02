@@ -1,3 +1,3 @@
 # AzureWebApp
 
-<!-- trigger redeploy v6 -->
+<!-- trigger redeploy v7 -->
