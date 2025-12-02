@@ -1,23 +1,35 @@
 import azure.functions as func
 import uuid
-import json
+import logging
+import os
+
+from azure.identity import DefaultAzureCredential
+from azure.cosmos import CosmosClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-@app.cosmos_db_output(
-    arg_name="doc",
-    database_name="VisitCount",       
-    container_name="Visitors",     
-    connection="CosmosConn"          
+COSMOS_ENDPOINT = os.environ["COSMOS_ENDPOINT"]      
+COSMOS_DATABASE_NAME = os.environ.get("COSMOS_DATABASE_NAME", "VisitCount")
+COSMOS_CONTAINER_NAME = os.environ.get("COSMOS_CONTAINER_NAME", "Visitors")
+
+credential = DefaultAzureCredential()
+
+cosmos_client = CosmosClient(COSMOS_ENDPOINT, credential=credential)
+cosmos_container = cosmos_client.get_database_client(COSMOS_DATABASE_NAME).get_container_client(
+    COSMOS_CONTAINER_NAME
 )
+
 @app.route(route="track", methods=["GET"])
-def track(req: func.HttpRequest, doc: func.Out[str]) -> func.HttpResponse:
+def track(req: func.HttpRequest) -> func.HttpResponse:
+    try:
+        item = {
+            "id": str(uuid.uuid4()),
+            "note": "Prod test entry",
+        }
 
-    item = {
-        "id": str(uuid.uuid4()),     
-        "note": "Test entry"
-    }
+        cosmos_container.create_item(item)
 
-    doc.set(json.dumps(item))
-
-    return func.HttpResponse("Inserted into Cosmos!", status_code=200)
+        return func.HttpResponse("Inserted into Cosmos via Managed Identity!", status_code=200)
+    except Exception as e:
+        logging.error(f"Cosmos DB write failed: {e}")
+        return func.HttpResponse(f"Cosmos DB write failed: {e}", status_code=500)
