@@ -72,10 +72,5 @@ jobs:
           app-name: 'dom-prod-fnapp'
           slot-name: 'Production'
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-<<<<<<< HEAD:.github/workflows/dev_dom-test-fnapp.yml
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_TEST }}
 
-=======
-
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_025550DEBC5E4008B095E48C7B705855 }}
->>>>>>> main:.github/workflows/main_dom-prod-fnapp.yml
