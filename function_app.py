@@ -8,9 +8,9 @@ from azure.cosmos import CosmosClient
 
 app = func.FunctionApp(http_auth_level=func.AuthLevel.ANONYMOUS)
 
-COSMOS_ENDPOINT = os.environ["COSMOS_ENDPOINT"]      
-COSMOS_DATABASE_NAME = os.environ.get("COSMOS_DATABASE_NAME", "VisitCount")
-COSMOS_CONTAINER_NAME = os.environ.get("COSMOS_CONTAINER_NAME", "Visitors")
+COSMOS_ENDPOINT = os.getenv("COSMOS_ENDPOINT")
+COSMOS_DATABASE_NAME = os.getenv("COSMOS_DATABASE_NAME", "VisitCount")
+COSMOS_CONTAINER_NAME = os.getenv("COSMOS_CONTAINER_NAME", "Visitors")
 
 credential = DefaultAzureCredential()
 
