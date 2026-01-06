@@ -2,7 +2,7 @@ import azure.functions as func
 import uuid
 import logging
 import os
-import datetime
+from datetime import datetime
 
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient
@@ -21,7 +21,6 @@ cosmos_container = cosmos_client.get_database_client(COSMOS_DATABASE_NAME).get_c
 )
 
 @app.route(route="track", methods=["GET"])
-@app.route(route="track", methods=["GET"])
 def track(req: func.HttpRequest) -> func.HttpResponse:
     try:
         client_ip = (
@@ -35,7 +34,7 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
         item = {
             "id": str(uuid.uuid4()),
             "note": "Prod test entry",
-            "accessedAtUtc": datetime.utcnow().isoformat(),
+            "accessedAtUtc": datetime().isoformat() + "Z",
             "VisitorIpAddress": client_ip,
         }
 
