@@ -2,7 +2,7 @@ import azure.functions as func
 import uuid
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient
@@ -30,11 +30,11 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
             or req.headers.get("X-Client-IP")
             or "unknown"
         )
-
+ 
         item = {
             "id": str(uuid.uuid4()),
             "note": "Prod test entry",
-            "accessedAtUtc": datetime().isoformat() + "Z",
+            "accessedAtUtc": datetime.now(timezone.utc).isoformat(),
             "VisitorIpAddress": client_ip,
         }
 
