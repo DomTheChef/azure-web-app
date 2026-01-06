@@ -2,6 +2,7 @@ import azure.functions as func
 import uuid
 import logging
 import os
+import datetime
 
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient
@@ -20,11 +21,22 @@ cosmos_container = cosmos_client.get_database_client(COSMOS_DATABASE_NAME).get_c
 )
 
 @app.route(route="track", methods=["GET"])
+@app.route(route="track", methods=["GET"])
 def track(req: func.HttpRequest) -> func.HttpResponse:
     try:
+        client_ip = (
+            req.headers.get("X-Forwarded-For", "")
+            .split(",")[0]
+            .strip()
+            or req.headers.get("X-Client-IP")
+            or "unknown"
+        )
+
         item = {
             "id": str(uuid.uuid4()),
             "note": "Prod test entry",
+            "accessedAtUtc": datetime.utcnow().isoformat(),
+            "VisitorIpAddress": client_ip,
         }
 
         cosmos_container.create_item(item)
@@ -33,3 +45,4 @@ def track(req: func.HttpRequest) -> func.HttpResponse:
     except Exception as e:
         logging.error(f"Cosmos DB write failed: {e}")
         return func.HttpResponse(f"Cosmos DB write failed: {e}", status_code=500)
+
