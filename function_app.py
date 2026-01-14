@@ -2,6 +2,7 @@ import azure.functions as func
 import uuid
 import logging
 import os
+from datetime import datetime, timezone
 
 from azure.identity import DefaultAzureCredential
 from azure.cosmos import CosmosClient
